@@ -1,0 +1,24 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ko" lang="ko">
+<head>
+<title>Reverse QR</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no" />
+</head>
+<body>
+<form action="/s" id="frm" method="post">
+<textarea id="txt" name="txt" rows="4" width="100%" style="border: 1px solid #999999;margin: 5px 0;padding: 3px;width: 99%;"></textarea>
+<input type="hidden" id="idi" name="idi" value="{{ qkey }}">
+<input type="hidden" id="type" name="type" value="text"><br>
+<button onclick="document.getElementById('frm').submit();">As a text</button>
+<button onclick="changeResub()">As a link</button>
+</form>
+<script type="text/javascript">
+function changeResub(){
+document.getElementById('type').value="link";
+document.getElementById('frm').submit();
+}
+</script>
+<br><br>
+<a href="/">Do another<a>
+</body>

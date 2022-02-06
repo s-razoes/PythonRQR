@@ -7,6 +7,14 @@
 </head>
 <body>
 <textarea id="txt" name="txt" rows="4" disabled width="100%" style="border: 1px solid #999999;margin: 5px 0;padding: 3px;width: 99%;">{{ txt }}</textarea>
+<p style="text-align:center" align="center"><span><div id="qrcode" style="border: 15px solid white"></div></span></p>
+<script type="text/javascript" src="qrcode.js"></script>
+<script type="text/javascript">
+let qrcode = new QRCode(document.getElementById("qrcode"), {width : 400,
+height : 400});
+qrcode.makeCode(window.location.href);
+</script>
 <br><br>
 <a href="/">Do another<a>
 </body>
+</html>

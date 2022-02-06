@@ -9,13 +9,13 @@
 <form action="/s" id="frm" method="post">
 <textarea id="txt" name="txt" rows="4" width="100%" style="border: 1px solid #999999;margin: 5px 0;padding: 3px;width: 99%;"></textarea>
 <input type="hidden" id="idi" name="idi" value="{{ qkey }}">
-<input type="hidden" id="type" name="type" value="text"><br>
+<input type="hidden" id="type" name="type" value="2"><br>
 <button onclick="document.getElementById('frm').submit();">As a text</button>
 <button onclick="changeResub()">As a link</button>
 </form>
 <script type="text/javascript">
 function changeResub(){
-document.getElementById('type').value="link";
+document.getElementById('type').value="1";
 document.getElementById('frm').submit();
 }
 </script>

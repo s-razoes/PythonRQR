@@ -12,8 +12,6 @@ Expected files for SSL:
     
     
 **TODO**
-* arguments
-  * files in arguments
-  * option without https
-  * port number
+* ~~option without https~~
+* ~~port number~~
 * vcenter QR code

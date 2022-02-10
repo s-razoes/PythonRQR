@@ -12,12 +12,12 @@ def id_type(idi):
     path = path_link(idi)
     if os.path.exists(path) is True:
         return config.CONTENT_TYPE.LINK
-    path = path_value(idi)
-    if os.path.exists(path) is True:
-        return config.CONTENT_TYPE.VALUE
     path = path_file(idi)
     if os.path.exists(path) is True:
         return config.CONTENT_TYPE.FILE
+    path = path_value(idi)
+    if os.path.exists(path) is True:
+        return config.CONTENT_TYPE.VALUE
 
     return config.CONTENT_TYPE.NONE
 
@@ -44,6 +44,7 @@ def write_data(idi, data, type, filename=None):
     if type is config.CONTENT_TYPE.FILE:
         file_path = path_file(idi)
         data.save(file_path)
+        data.close()
         data = filename
         type = config.CONTENT_TYPE.VALUE
     f = None
@@ -59,6 +60,7 @@ def write_data(idi, data, type, filename=None):
 def load_data(idi, type):
     fileData = None
     if type is config.CONTENT_TYPE.FILE:
+        file_path = path_file(idi)
         f = open(file_path, "rb")
         fileData = f.read()
     if type is config.CONTENT_TYPE.LINK:

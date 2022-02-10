@@ -1,27 +1,27 @@
 import config
-import id_manager
 import file_manager
 import redis_manager
 
 
-def write_data(idi, data, type):
+def write_data(idi, data, type, filename=None):
     if config.REDIS:
         return redis_manager.set_idi_value(idi, data, type)
 
-    file_manager.write_data(idi, data, type)
+    file_manager.write_data(idi, data, type, filename)
 
 
-def load_data(idi, link=False):
+def load_data(idi, type):
+    valData = None
     if config.REDIS:
-        txt = redis_manager.get_idi_value(idi)
+        binData = redis_manager.get_idi_value(idi)
     else:
-        txt = file_manager.load_data(idi, link)
+        binData, valData = file_manager.load_data(idi, type)
 
-    if link:
-        ltxt = txt.lower()
+    if type is config.CONTENT_TYPE.LINK:
+        ltxt = valData.lower()
         if ltxt[:7] != "http://" and ltxt[:8] != "https://":
-            txt = "https://" + txt
-    return txt
+            valData = "https://" + valData
+    return binData, valData
 
 def setup_id(idi, data):
     if config.REDIS:
@@ -30,7 +30,7 @@ def setup_id(idi, data):
 
 def is_id_setup(idi):
     if config.REDIS:
-        return redis_manager.get_idi_value(idi + '_setup', request) is not None
+        return redis_manager.get_idi_value(idi + '_setup') is not None
     return file_manager.is_id_setup(idi)
 
 

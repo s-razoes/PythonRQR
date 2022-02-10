@@ -1,9 +1,7 @@
 import random
-import os
 import re
 #project libraries
 import config
-from config import CONTENT_TYPE
 import data_manager
 
 ids_index = []

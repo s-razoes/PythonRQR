@@ -16,7 +16,7 @@ LOG_PREFIX = "_log.txt"
 SET_PREFIX = "_set.txt"
 
 LOG_TO_FILE = True
-
+MAX_FILE_SIZE = 5
 
 secure = False
 if crtFile != None and keyFile != None and os.path.isfile(crtFile) and os.path.isfile(keyFile):

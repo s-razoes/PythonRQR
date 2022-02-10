@@ -13,6 +13,12 @@
 <button onclick="document.getElementById('frm').submit();">As a text</button>
 <button onclick="changeResub()">As a link</button>
 </form>
+<p>Or upload a file ({{MAX_CONTENT_LENGTH}}Mb max.)</p>
+<form action="/f" method=post enctype=multipart/form-data>
+    <input type="hidden" id="idi" name="idi" value="{{ qkey }}">
+    <input type=file name=file>
+    <input type=submit value=Upload>
+</form>
 <script type="text/javascript">
 function changeResub(){
 document.getElementById('type').value="1";

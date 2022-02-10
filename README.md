@@ -15,7 +15,7 @@ Expected files for SSL:
 **TODO**
 * ~~option without https~~
 * ~~port number~~
-* vcenter QR code
+* ~~vcenter QR code~~
 * better UI
 * ~~WSGI~~
 * expiration (date or views)

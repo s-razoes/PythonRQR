@@ -1,6 +1,5 @@
-#import ssl
-from flask import Flask, flash, render_template, request, redirect, send_from_directory
-from werkzeug.serving import run_simple
+from flask import Flask, render_template, request, redirect, send_from_directory
+from werkzeug.utils import secure_filename
 #project libraries
 import config
 import logger
@@ -8,6 +7,7 @@ import id_manager
 import data_manager
 
 app = Flask(__name__)
+app.config['MAX_CONTENT_LENGTH'] = config.MAX_FILE_SIZE * 1024 * 1024
 
 @app.route('/qrcode.js')
 def qrcode_js():
@@ -46,18 +46,20 @@ def qr_host(idi):
 
     logger.log_call(request, idi, "Read")
 
-    link_value = data_manager.id_type(idi)
-    if link_value in (config.CONTENT_TYPE.LINK,config.CONTENT_TYPE.VALUE,config.CONTENT_TYPE.FILE):
-        lnk = (link_value == config.CONTENT_TYPE.LINK)
-        data = data_manager.load_data(idi, link=lnk)
-        if lnk:
+    content_type = data_manager.id_type(idi)
+    if content_type in (config.CONTENT_TYPE.LINK,config.CONTENT_TYPE.VALUE,config.CONTENT_TYPE.FILE):
+        data, valData = data_manager.load_data(idi, content_type)
+        if content_type is config.CONTENT_TYPE.FILE:
+            response = make_response(data)
+            response.headers.set('Content-Disposition', 'attachment', filename=valData)
+            return response
+        if content_type == config.CONTENT_TYPE.LINK:
             template = 'link.html'
         else:
             template = 'read.html'
-        #TODO file handler
-        return render_template(template, txt=data)
+        return render_template(template, txt=valData)
 
-    return render_template('home.html', qkey=idi)
+    return render_template('home.html', qkey=idi, MAX_CONTENT_LENGTH=config.MAX_FILE_SIZE)
 
 @app.route('/s', methods=['POST'])
 def store():
@@ -74,7 +76,28 @@ def store():
 
     data_manager.write_data(idi, txt, type)
 
-    return redirect("/" + idi, code=302)
+    return render_template('finished.html')
+
+@app.route('/f', methods=['POST'])
+def file_store():
+    idi = request.form['idi']
+    if id_manager.is_valid_id(idi) is False:
+        return "error"
+
+    if id_manager.id_has_content(idi):
+        return "Already exists!"
+
+    if 'file' not in request.files:
+        return 'No file.'
+    
+    file = request.files['file']
+    filename = secure_filename(file.filename)
+    logger.log_call(request, idi, "Write file")
+
+    data_manager.write_data(idi, file, config.CONTENT_TYPE.FILE, filename)
+
+    return render_template('finished.html')
+
 
 @app.route("/c/<string:idi>")
 def check(idi):
@@ -83,7 +106,3 @@ def check(idi):
             return "2" #finished uploading value
         return "1" #only setup
     return "0"
-
-
-
-

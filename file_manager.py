@@ -40,25 +40,34 @@ def path_value(idi):
 def path_file(idi):
     return os.path.join(files_path, idi + config.FILE_PREFIX)
 
-def write_data(idi, data, type):
+def write_data(idi, data, type, filename=None):
+    if type is config.CONTENT_TYPE.FILE:
+        file_path = path_file(idi)
+        data.save(file_path)
+        data = filename
+        type = config.CONTENT_TYPE.VALUE
     f = None
-    if type == "2":
+    if type is config.CONTENT_TYPE.VALUE:
         file_path = path_value(idi)
-    elif type == "1":
+    if type is config.CONTENT_TYPE.LINK:
         file_path = path_link(idi)
     f = open(file_path, "a", encoding='utf8')
     f.write(data)
     f.close()
 
 
-def load_data(idi, link=False):
-    if link:
+def load_data(idi, type):
+    fileData = None
+    if type is config.CONTENT_TYPE.FILE:
+        f = open(file_path, "rb")
+        fileData = f.read()
+    if type is config.CONTENT_TYPE.LINK:
         file_path = path_link(idi)
     else:
         file_path = path_value(idi)
-
     f = open(file_path, "r")
-    return f.read()
+    valData = f.read()
+    return fileData, valData
     
 #log to file
 def log_data(request, idi, data):

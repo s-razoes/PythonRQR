@@ -37,10 +37,10 @@ def write(idi):
 
     id_manager.setup_id(idi, request.remote_addr + "\n" + str(request.headers))
 
-    return render_template('write.html', qkey=idi)
+    return render_template('write.html', qkey=idi, MAX_CONTENT_LENGTH=config.MAX_FILE_SIZE)
 
-@app.route("/<string:idi>")
-def qr_host(idi):
+@app.route("/d/<string:idi>", methods=['GET'])
+def download_file(idi):
     if id_manager.is_valid_id(idi) is False:
         return "error"
 
@@ -48,25 +48,50 @@ def qr_host(idi):
 
     content_type = data_manager.id_type(idi)
     if content_type in (config.CONTENT_TYPE.LINK,config.CONTENT_TYPE.VALUE,config.CONTENT_TYPE.FILE):
-        data, valData = data_manager.load_data(idi, content_type)
+        valData = data_manager.load_data(idi, content_type)
         if content_type is config.CONTENT_TYPE.FILE:
+            data = data_manager.load_file_data(idi)
+            filename,filetype = valData.split('|')
             response = make_response(data)
-            response.headers.set('Content-Disposition', 'attachment', filename=valData)
+            response.headers['Content-Type'] = filetype
+            response.headers["Content-Length"] = len(data)
+            response.headers.set('Content-Disposition', 'attachment', filename=filename)
             return response
+
+    return "Error"
+
+
+@app.route("/<string:idi>")
+def qr_host(idi):
+    if id_manager.is_valid_id(idi) is False:
+        return "error"
+
+    if id_manager.is_expired(idi):
+        return "Expired."
+
+    logger.log_call(request, idi, "Read")
+
+    content_type = data_manager.id_type(idi)
+    if content_type in (config.CONTENT_TYPE.LINK,config.CONTENT_TYPE.VALUE,config.CONTENT_TYPE.FILE):
+        valData = data_manager.load_data(idi, content_type)
+        if content_type is config.CONTENT_TYPE.FILE:
+            filename,filetype = valData.split('|')
+            return render_template('file.html', filename=filename,filetype=filetype,qkey=idi)
         if content_type == config.CONTENT_TYPE.LINK:
             template = 'link.html'
         else:
             template = 'read.html'
         return render_template(template, txt=valData)
 
-    return render_template('home.html', qkey=idi, MAX_CONTENT_LENGTH=config.MAX_FILE_SIZE)
+    return render_template('home.html', qkey=idi)
 
 @app.route('/s', methods=['POST'])
 def store():
     txt = request.form['txt']
     idi = request.form['idi']
+    link = request.form['link']
     type = request.form['type']
-    if id_manager.is_valid_id(idi) is False or txt is None or txt == '':
+    if id_manager.is_valid_id(idi) is False:
         return "error"
 
     if id_manager.id_has_content(idi):
@@ -74,7 +99,7 @@ def store():
 
     logger.log_call(request, idi, "Write")
 
-    data_manager.write_data(idi, txt, type)
+    data_manager.write_data(idi, txt+link, type)
 
     return render_template('finished.html')
 
@@ -89,12 +114,13 @@ def file_store():
 
     if 'file' not in request.files:
         return 'No file.'
-    
+
     file = request.files['file']
     filename = secure_filename(file.filename)
+    filetype = file.content_type
     logger.log_call(request, idi, "Write file")
 
-    data_manager.write_data(idi, file, config.CONTENT_TYPE.FILE, filename)
+    data_manager.write_file_data(idi, file, filename, filetype)
 
     return render_template('finished.html')
 

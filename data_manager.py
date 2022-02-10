@@ -23,15 +23,24 @@ def load_data(idi, link=False):
             txt = "https://" + txt
     return txt
 
+def setup_id(idi, data):
+    if config.REDIS:
+        return redis_manager.set_idi_value(idi + '_setup', data)
+    file_manager.setup_id(idi, data)
+
+def is_id_setup(idi):
+    if config.REDIS:
+        return redis_manager.get_idi_value(idi + '_setup', request) is not None
+    return file_manager.is_id_setup(idi)
 
 
-def id_link_value(idi):
+def id_type(idi):
     if config.REDIS:
         type = redis_manager.get_idi_type(idi)
         if type is None:
             return 0
         return type
-    return file_manager.id_link_value(idi)
+    return file_manager.id_type(idi)
 
 def id_created(idi):
     if config.REDIS:

@@ -8,21 +8,37 @@ def id_created(idi):
     path = os.path.join(files_path, idi + config.LOG_PREFIX)
     return os.path.exists(path)
 
-def id_link_value(idi):
+def id_type(idi):
     path = path_link(idi)
     if os.path.exists(path) is True:
-        return '1' #link
+        return config.CONTENT_TYPE.LINK
     path = path_value(idi)
     if os.path.exists(path) is True:
-        return '2' #value
+        return config.CONTENT_TYPE.VALUE
+    path = path_file(idi)
+    if os.path.exists(path) is True:
+        return config.CONTENT_TYPE.FILE
 
-    return 0
+    return config.CONTENT_TYPE.NONE
+
+def setup_id(idi, data):
+    file_path = os.path.join(files_path, idi + config.SET_PREFIX)
+    f = open(file_path, "a", encoding='utf8')
+    f.write(data)
+    f.close()
+
+def is_id_setup(idi):
+    path = os.path.join(files_path, idi + config.SET_PREFIX)
+    return os.path.exists(path)
 
 def path_link(idi):
     return os.path.join(files_path, idi + config.LINK_PREFIX)
 
 def path_value(idi):
     return os.path.join(files_path, idi + config.VAL_PREFIX)
+
+def path_file(idi):
+    return os.path.join(files_path, idi + config.FILE_PREFIX)
 
 def write_data(idi, data, type):
     f = None

@@ -3,6 +3,7 @@ import os
 import re
 #project libraries
 import config
+from config import CONTENT_TYPE
 import data_manager
 
 ids_index = []
@@ -12,7 +13,7 @@ ids_index = []
 def get_rnd_str(length):
     return ''.join(random.choices('1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', k=length))
 
-def create_idi():
+def create_id():
     while True:
         idi = get_rnd_str(config.ID_SIZE)
         print(str(idi))
@@ -20,7 +21,13 @@ def create_idi():
             data_manager.create_id(idi)
             return idi
 
-def is_valid_idi(idi):
+def setup_id(idi, data):
+    data_manager.setup_id(idi, data)
+
+def is_id_setup(idi):
+    return data_manager.is_id_setup(idi)
+
+def is_valid_id(idi):
     if len(idi) != config.ID_SIZE:
         return False
     # check if idi has only numbers and alfa
@@ -30,14 +37,9 @@ def is_valid_idi(idi):
 
 def id_created(idi):
     return data_manager.id_created(idi)
-    #return idi in ids_index
 
-def id_link_value(idi):
-    return data_manager.id_link_value(idi)
-
-def id_has_lnk_val(idi, result=None):
-    if result is None:
-        result = id_link_value(idi)
-    if result in ('1','2'):
+def id_has_content(idi, result=None):
+    if data_manager.id_type(idi) is config.CONTENT_TYPE.NONE:
+        return False
+    else:
         return True
-    return False

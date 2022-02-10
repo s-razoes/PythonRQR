@@ -1,4 +1,5 @@
 import os
+from enum import Enum
 
 crtFile = "fullchain.pem" #if not found or these files don't exist then it will only use http:
 keyFile = "privkey.pem"
@@ -12,10 +13,17 @@ ID_SIZE = 30
 VAL_PREFIX =  "_val.txt"
 LINK_PREFIX =  "_lnk.txt"
 LOG_PREFIX = "_log.txt"
+SET_PREFIX = "_set.txt"
 
 LOG_TO_FILE = True
+
 
 secure = False
 if crtFile != None and keyFile != None and os.path.isfile(crtFile) and os.path.isfile(keyFile):
     secure = True
 
+class CONTENT_TYPE(Enum):
+    NONE = 0
+    VALUE = 1
+    LINK = 2
+    FILE = 3

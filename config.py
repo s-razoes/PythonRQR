@@ -14,7 +14,7 @@ VAL_PREFIX =  "_val.txt"
 LINK_PREFIX =  "_lnk.txt"
 LOG_PREFIX = "_log.txt"
 SET_PREFIX = "_set.txt"
-TYPE_PREFIX = ""
+TYPE_PREFIX = "_typ.txt"
 
 LOG_TO_FILE = True
 MAX_FILE_SIZE = 5

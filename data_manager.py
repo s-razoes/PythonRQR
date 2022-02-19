@@ -26,8 +26,7 @@ def load_data(idi, type):
     return valData
 
 def is_expired(idi):
-    file_manager.is_expired(idi)
-    return False
+    return file_manager.is_expired(idi)
 
 def setup_id(idi, data):
     if config.REDIS:

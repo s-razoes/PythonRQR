@@ -32,7 +32,8 @@
         <p id="p1" class='selected'>2 - Use your source device (phone or tablet) to scan this code</p>
         <p id="p2" class='normal'>3 - Submit the information in the resulting site</p>
         <p class='normal'>4 - Automatically and it will be displayed here</p>
-        <p style="text-align:center" align="center"><span><div id="qrcode" style="border: 15px solid white; height:400px"></div></span></p>
+        <p style="text-align:center" align="center"><a hidden="true" id="returnQR" href="#" onclick="showQR()"> Show QR again. </a><span><div id="qrcode" style="border: 15px solid white; height:400px"></div></span></p>
+        Click <a id='hl' href="">here</a> if this is the source device.
         <p id="startover" hidden="true"><br>Messed up? No worries, <a href="../">just start over<a></p>
     </div>
 </div>
@@ -43,7 +44,9 @@ let qrcode = new QRCode(document.getElementById("qrcode"), {
 	height : 400
 });
 let url = window.location.href.replace('{{ qkey }}','w/{{ qkey }}');
+document.getElementById('hl').setAttribute('href',url + '?q');
 qrcode.makeCode(url);
+var manualQR = false;
 let checkUrl = window.location.href.replace('{{ qkey }}','c/{{ qkey }}');
 function checkValues(){
     var xhttp = new XMLHttpRequest();
@@ -51,16 +54,22 @@ function checkValues(){
         if (this.readyState == 4 && this.status == 200) {
             if(xhttp.responseText == '2')
                 location.reload();
-            if(xhttp.responseText == '1'){
+            if(xhttp.responseText == '1' && manualQR==false){
                 document.getElementById('qrcode').hidden = true;
                 document.getElementById('p1').className = "normal";
                 document.getElementById('p2').className = "selected";
                 document.getElementById('startover').hidden = false;
+                document.getElementById('returnQR').hidden = false;
             }
         }
     };
     xhttp.open("GET", checkUrl, true);
     xhttp.send();
+}
+function showQR(){
+    document.getElementById('returnQR').hidden = true;
+    document.getElementById('qrcode').hidden = false;
+    manualQR = true;
 }
 checkValues();
 var timeOut = setInterval("checkValues()", 2000);

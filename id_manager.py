@@ -25,6 +25,9 @@ def setup_id(idi, data):
 def is_id_setup(idi):
     return data_manager.is_id_setup(idi)
 
+def is_expired(idi):
+    return data_manager.is_expired(idi)
+
 def is_valid_id(idi):
     if len(idi) != config.ID_SIZE:
         return False

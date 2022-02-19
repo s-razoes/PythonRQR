@@ -21,7 +21,7 @@ def id_type(idi):
 
     return config.CONTENT_TYPE.NONE
 
-def id_expired(idi):
+def is_expired(idi):
     file_path = path_type(idi)
     if os.path.exists(file_path) is True:
         f = open(file_path, "r", encoding='utf8')

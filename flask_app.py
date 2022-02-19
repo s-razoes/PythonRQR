@@ -98,9 +98,10 @@ def store():
         return "Already exists!"
 
     logger.log_call(request, idi, "Write")
-
     data_manager.write_data(idi, txt+link, type)
 
+    if request.form['return'] == "1":
+        return redirect('../' + idi, code=302)
     return render_template('finished.html')
 
 @app.route('/f', methods=['POST'])
@@ -122,6 +123,8 @@ def file_store():
 
     data_manager.write_file_data(idi, file, filename, filetype)
 
+    if request.form['return'] == "1":
+        return redirect('/' + idi, code=302)
     return render_template('finished.html')
 
 

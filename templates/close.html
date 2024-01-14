@@ -6,15 +6,12 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no" />
 </head>
 <body>
-<p>You can delete this when you're done.</p>
-<form action="/del" id="fform" method=post enctype=multipart/form-data>
-<input type="hidden" id="idi" name="idi" value="{{ qkey }}">
-</form>
-<button onclick="suball();">Delete this!</button>
+<p>You can go ahead and close this window.</p>
+<br>
+Or you can <a href="/">do another<a></a>
 </body>
-<script type="text/javascript">
-    function suball(){
-        document.getElementById('fform').submit();
-    }
+<script>
+    window.close();
+    self.close();
 </script>
 </html>

@@ -28,10 +28,10 @@
     <div class="element">
         <h1>Reverse QR</h1>
         <p>Ever wanted to send information or a file quickly from your phone to an untrusted device?</p>
-        <p class='normal'>1 - Open this page on the untrusted device</p>
-        <p id="p1" class='selected'>2 - Use your source device (phone or tablet) to scan this code</p>
-        <p id="p2" class='normal'>3 - Submit the information in the resulting site</p>
-        <p class='normal'>4 - Automatically and it will be displayed here</p>
+        <p class='normal'>Open this page on the destination device</p>
+        <p id="p1" class='selected'>1 - Use your smartphone to scan this code and open that page</p>
+        <p id="p2" class='normal'>2 - Submit the information there</p>
+        <p class='normal'>and it will be displayed here automatically</p>
         <p style="text-align:center" align="center"><a hidden="true" id="returnQR" href="#" onclick="showQR()"> Show QR again. </a><span><div id="qrcode" style="border: 15px solid white; height:400px"></div></span></p>
         Click <a id='hl' href="">here</a> if this is the source device.
         <p id="startover" hidden="true"><br>Messed up? No worries, <a href="../">just start over<a></p>
@@ -52,8 +52,10 @@ function checkValues(){
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
-            if(xhttp.responseText == '2')
+            if(xhttp.responseText == '2'){
                 location.reload();
+                clearTimeout(timeOut);
+            }
             if(xhttp.responseText == '1' && manualQR==false){
                 document.getElementById('qrcode').hidden = true;
                 document.getElementById('p1').className = "normal";
@@ -74,9 +76,5 @@ function showQR(){
 checkValues();
 var timeOut = setInterval("checkValues()", 2000);
 </script>
-<footer>
-    <p>Author: <a href="https://twitter.com/RazoesSergio">Sergio Razoes</a> in 2022</p>
-    <p><a href="https://github.com/s-razoes/s-razoes">GitHub s-razoes</a></p>
-</footer>
 </body>
 </html>

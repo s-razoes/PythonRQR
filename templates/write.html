@@ -22,13 +22,13 @@
 <input type="hidden" id="idi" name="idi" value="{{ qkey }}">
 <input type=file id="file" name=file>
 <input type="hidden" id="fexp" name="exp" value="">   
-<p>Don't forget to select the expiration:</p>
+<!-- <p>Don't forget to select the expiration:</p>
 <select id='expiration'>
 <option value="1h" selected>1 hour</option>
 <option value="10min">10 minutes</option>
 <option value="1hit">1 view</option>
 <option value="10hits">10 views</option>
-</select>
+</select> -->
 </form>
 <br>
 <button onclick="suball();">Send this!</button>
@@ -46,7 +46,7 @@ if(window.location.href.includes('?q')){
     qrcode.makeCode(url);
 }
 function suball(){
-    document.getElementById('exp').value = document.getElementById('expiration').value;
+    //document.getElementById('exp').value = document.getElementById('expiration').value;
     var sum = (document.getElementById('link').value != "") + (document.getElementById('txt').value != "") + (document.getElementById('file').value != "")
     if(sum > 1){
         alert("Sorry, only one type of content allowed.");

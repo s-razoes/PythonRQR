@@ -7,9 +7,28 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no" />
 </head>
 <body>
-<p>File name:</p> {{filename}}<br>
-<p>File type:</p> {{filetype}}<br>
+<p>File name: {{filename}}</p>
+<p>File type: {{filetype}}</p>
+<p>File size: {{filesize}}</p>
 <a href='/d/{{qkey}}'>download</a>
+<p style="text-align:center" align="center"><span><div id="qrcode" style="border: 15px solid white"></div></span></p>
+<script type="text/javascript" src="qrcode.js"></script>
+<script type="text/javascript">
+let qrcode = new QRCode(document.getElementById("qrcode"), {width : 400,
+height : 400});
+qrcode.makeCode(window.location.href.replace('?q',''));
+</script>
+<form action="/del" id="fform" method=post enctype=multipart/form-data>
+<input type="hidden" id="idi" name="idi" value="{{ qkey }}">
+</form>
+<button id="button" onclick="suball();" hidden="true">Delete this!</button>
+<script type="text/javascript">
+    if (window.location.href.indexOf("?q") != -1)
+        document.getElementById('button').hidden = false;
+    function suball(){
+        document.getElementById('fform').submit();
+    }
+</script>
 <br><br>
 <a href="/">Do another<a>
 </body>

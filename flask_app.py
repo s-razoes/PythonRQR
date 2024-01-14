@@ -35,9 +35,10 @@ def write(idi):
     if id_manager.id_has_content(idi):
         return "Already created"
 
-    id_manager.setup_id(idi, request.remote_addr + "\n" + str(request.headers))
-
-    return render_template('write.html', qkey=idi, MAX_CONTENT_LENGTH=config.MAX_FILE_SIZE)
+    key = id_manager.setup_id(idi, request.remote_addr + "\n" + str(request.headers))
+    resp = make_response(render_template('write.html', qkey=idi, MAX_CONTENT_LENGTH=config.MAX_FILE_SIZE))
+    resp.set_cookie('key', key)
+    return resp
 
 @app.route("/d/<string:idi>", methods=['GET'])
 def download_file(idi):
@@ -60,8 +61,26 @@ def download_file(idi):
 
     return "Error"
 
+@app.route("/del", methods=['POST'])
+def delete_id():
+    idi = request.form['idi']
+    if id_manager.is_valid_id(idi) is False:
+        return "error"
+    
+    key = request.cookies.get('key')
 
-@app.route("/<string:idi>")
+    logger.log_call(request, idi, "Delete")
+
+    content_type = data_manager.id_type(idi)
+    if content_type in (config.CONTENT_TYPE.LINK,config.CONTENT_TYPE.VALUE,config.CONTENT_TYPE.FILE):
+        if id_manager.check_key(idi, key):
+            id_manager.delete_id(idi)
+            return render_template('close.html') 
+
+    return "Error"
+
+
+@app.route("/<string:idi>", methods=['GET'])
 def qr_host(idi):
     if id_manager.is_valid_id(idi) is False:
         return "error"
@@ -71,17 +90,31 @@ def qr_host(idi):
 
     logger.log_call(request, idi, "Read")
 
+    preview_mode = False
+    if request.args.get('q') is not None:
+        preview_mode = True
+
     content_type = data_manager.id_type(idi)
+    if content_type == config.CONTENT_TYPE.DELETED:
+        return redirect('/', code=302) 
+
     if content_type in (config.CONTENT_TYPE.LINK,config.CONTENT_TYPE.VALUE,config.CONTENT_TYPE.FILE):
         valData = data_manager.load_data(idi, content_type)
         if content_type is config.CONTENT_TYPE.FILE:
             filename,filetype = valData.split('|')
-            return render_template('file.html', filename=filename,filetype=filetype,qkey=idi)
+            if preview_mode:
+                filesize = data_manager.get_file_size(idi)
+                return render_template('file.html', filename=filename,filetype=filetype,qkey=idi, filesize=filesize)
+            else:
+                return download_file(idi)
         if content_type == config.CONTENT_TYPE.LINK:
-            template = 'link.html'
+            if preview_mode:
+                template = 'link.html'
+            else:
+                return redirect(valData, code=302)
         else:
             template = 'read.html'
-        return render_template(template, txt=valData)
+        return render_template(template, txt=valData, qkey=idi)
 
     return render_template('home.html', qkey=idi)
 
@@ -101,8 +134,8 @@ def store():
     data_manager.write_data(idi, txt+link, type)
 
     if request.form['return'] == "1":
-        return redirect('../' + idi, code=302)
-    return render_template('finished.html')
+        return redirect(f'../{idi}?q', code=302)
+    return render_template('finished.html', qkey=idi)
 
 @app.route('/f', methods=['POST'])
 def file_store():
@@ -124,8 +157,8 @@ def file_store():
     data_manager.write_file_data(idi, file, filename, filetype)
 
     if request.form['return'] == "1":
-        return redirect('/' + idi, code=302)
-    return render_template('finished.html')
+        return redirect(f'/{idi}?q', code=302)
+    return render_template('finished.html', qkey=idi)
 
 
 @app.route("/c/<string:idi>")

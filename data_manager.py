@@ -1,6 +1,6 @@
 import config
 import file_manager
-import redis_manager
+#import redis_manager
 
 
 def write_data(idi, data, type):
@@ -16,6 +16,9 @@ def write_file_data(idi, file, filename, filetype):
 def load_file_data(idi):
     return file_manager.load_file_data(idi)
 
+def get_file_size(idi):
+    return file_manager.get_file_size(idi)
+
 def load_data(idi, type):
     valData = file_manager.load_data(idi)
 
@@ -28,15 +31,24 @@ def load_data(idi, type):
 def is_expired(idi):
     return file_manager.is_expired(idi)
 
-def setup_id(idi, data):
+def setup_id(idi, key, data):
     if config.REDIS:
         return redis_manager.set_idi_value(idi + '_setup', data)
-    file_manager.setup_id(idi, data)
+    file_manager.setup_id(idi, key, data)
+
+def check_key(idi, key):
+    return file_manager.check_key(idi, key)
+
 
 def is_id_setup(idi):
     if config.REDIS:
         return redis_manager.get_idi_value(idi + '_setup') is not None
     return file_manager.is_id_setup(idi)
+
+def delete_id(idi):
+    if config.REDIS:
+        return None # not done
+    return file_manager.delete_id(idi)
 
 
 def id_type(idi):

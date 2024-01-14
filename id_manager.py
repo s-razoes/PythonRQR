@@ -19,8 +19,16 @@ def create_id():
             data_manager.create_id(idi)
             return idi
 
+def delete_id(idi):
+    data_manager.delete_id(idi)
+
 def setup_id(idi, data):
-    data_manager.setup_id(idi, data)
+    key = get_rnd_str(config.KEY_SIZE)
+    data_manager.setup_id(idi, key, data)
+    return key
+
+def check_key(idi, key):
+    return data_manager.check_key(idi, key)
 
 def is_id_setup(idi):
     return data_manager.is_id_setup(idi)
